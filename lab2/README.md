@@ -8,7 +8,7 @@
 Если плотность объектов в пространстве неоднородна, то имеет смысл использовать переменную ширину окна, тогда формула приобретает следующий вид:\
 ![Формула](f2.png)
 
-Наиболее часто используются следующие типы ядер:
+Наиболее часто используются следующие типы ядер:\
 ![Ядра](Kernels.png)
 
 Алгоритм вокруг нашей классифицируемой точки u строит окружность с радиусом h. Далее убираем точки, которые не вошли в окружность. Затем для оставшихся, считаем weights, суммируем по class, и с помощью names(which.max(weights)) возвращаем название класса "победителя".
@@ -16,7 +16,7 @@
 ``` R
 PW = function(XL,y,h,metricFunction = euclideanDistance)
 {
-   l <- dim(xl)[1]
+  l <- dim(xl)[1]
 
   weights = rep(0,3)
   names(weights) = unique(xl[,3])
@@ -31,14 +31,14 @@ PW = function(XL,y,h,metricFunction = euclideanDistance)
   }
 
   #no p in w
- 
-    if(max(weights)==0) 
+  if(max(weights)==0) 
   {
     return ("0")
   }
-  else{
+  else
+  {
     return (names(which.max(weights)))
-      }
+  }
 }
 ```
 
