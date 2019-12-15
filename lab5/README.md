@@ -13,6 +13,12 @@
 ## Одинаковая дисперсия
 ![](Screenshot_17.png)
 
+## Признаки некоррелированы
+![](Screenshot_19.png)
+
+## Признаки коррелированы
+![](Screenshot_18.png)
+
 ## Реализация на R
 ```r
 drawLines <- function(center, cv) {
@@ -36,14 +42,20 @@ drawLines <- function(center, cv) {
     1 / (2*pi*sqrt(det)) * exp(-0.5 * (x^2*A + y^2*B + x*y*C + x*D + y*E + F))
   }
   
-  X <- seq(-2-0.1, 2+0.1, 0.1)
-  Y <- seq(-2-0.1, 2+0.1, 0.1)
+  X <- seq(-6-0.1, 6+0.1, 0.1)
+  Y <- seq(-6-0.1, 6+0.1, 0.1)
   Z <- outer(X, Y, func)
   
   contour(X, Y, Z)
 }
 
-par(pty="s")
+par(pty="m")
 
-drawLines(c(0, 0), matrix(c(1, 0, 0, 1), 2, 2))
+#n = 2
+#cent = (0; 0)
+#cv = 1, 0
+
+#drawLines(c(0, 0), matrix(c(3, 0, 0, 3), 2, 2))
+drawLines(c(0, 0), matrix(c(6, 0, 0, 2), 2, 2))
+#drawLines(c(0, 0), matrix(c(4, -4, 0, 4), 2, 2))
 ```

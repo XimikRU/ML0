@@ -28,4 +28,6 @@ drawLines <- function(center, cv) {
 
 par(pty="s")
 
-drawLines(c(0, 0), matrix(c(1, 0, 0, 1), 2, 2))
+drawLines(c(0, 0), matrix(c(1, 0, 0, 0.4), 2, 2))
+#drawLines(c(0, 0), matrix(c(1, 0, 0, 1), 2, 2))
+#drawLines(c(0, 0), matrix(c(1, 1, 0, 1), 2, 2))
