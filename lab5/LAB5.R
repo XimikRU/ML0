@@ -33,6 +33,11 @@ drawLines <- function(center, cv) {
 
 par(pty="m")
 
+# Одинаковая дисперсия
 #drawLines(c(0, 0), matrix(c(3, 0, 0, 3), 2, 2))
-drawLines(c(0, 0), matrix(c(6, 0, 0, 2), 2, 2))
-#drawLines(c(0, 0), matrix(c(4, -4, 0, 4), 2, 2))
+
+# Признаки некоррелированы
+#drawLines(c(0, 0), matrix(c(6, 0, 0, 2), 2, 2))
+
+# Признаки коррелированы
+drawLines(c(0, 0), matrix(c(4, -4, 0, 4), 2, 2))
