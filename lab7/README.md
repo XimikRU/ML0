@@ -22,23 +22,9 @@
 ![](Screenshot_20.png)
 
 ## Реализация на R
-```r
-# ковариационные матрицы для которой разделяющая поверхность - гиперполоид
-#sigma1 <- matrix(c(3, 0, 0, 10), 2, 2)
-#sigma2 <- matrix(c(20, 0, 0, 5), 2, 2)
+``` R
+library("MASS")
 
-# ковариационные матрицы для которой разделяющая поверхность - элипсоид
-#sigma1 <- matrix(c(10, 0, 0, 1), 2, 2)
-#sigma2 <- matrix(c(30, 0, 0, 10), 2, 2)
-
-# ковариационные матрицы для которой разделяющая поверхность - линейная
-sigma1 <- matrix(c(5, 0, 0, 10), 2, 2)
-sigma2 <- matrix(c(5, 0, 0, 10), 2, 2)
-
-mu1 <- c(10, 15)
-mu2 <- c(15, 15)
-
-# Восстанавливаем центр (отклонение)
 estimateMu <- function(xs) {
   l <- dim(xs)[2]
   res <- matrix(NA, 1, l)
@@ -48,7 +34,6 @@ estimateMu <- function(xs) {
   return(res)
 }
 
-# Восстанавливаем ковариационную матрицу
 estimateSigma <- function(xs, mu) {
   rows <- dim(xs)[1]
   cols <- dim(xs)[2]
@@ -61,7 +46,6 @@ estimateSigma <- function(xs, mu) {
   return(res/(rows - 1))
 }
 
-# Вычисляем функцию разделяющей поверхности
 getFunc <- function(sigma1, mu1, sigma2, mu2) {
   d1 <- det(sigma1)
   d2 <- det(sigma2)
@@ -83,5 +67,79 @@ getFunc <- function(sigma1, mu1, sigma2, mu2) {
   }
   
   return(func)
+}
+
+classificator <- function(x, mu, sigma, Prob, Prior) {
+  res <- log(Prob * Prior)
+  l <- length(x)
+  chisl <- exp(
+    (-1/2)*(
+      t(x-as.vector(mu)) %*% solve(sigma) %*% (x-as.vector(mu))
+    )
+  )
+  res = chisl/((2*pi) * det(sigma)^(1/2))
+  
+  return(res)
+}
+
+n <- 300
+colors <- c("red", "green")
+
+# ковариационные матрицы для которой разделяющая поверхность - гиперполоид
+sigma1 <- matrix(c(3, 0, 0, 10), 2, 2)
+sigma2 <- matrix(c(20, 0, 0, 5), 2, 2)
+
+# ковариационные матрицы для которой разделяющая поверхность - элипсоид
+#sigma1 <- matrix(c(10, 0, 0, 1), 2, 2)
+#sigma2 <- matrix(c(30, 0, 0, 10), 2, 2)
+
+# ковариационные матрицы для которой разделяющая поверхность - линейная
+#sigma1 <- matrix(c(5, 0, 0, 10), 2, 2)
+#sigma2 <- matrix(c(5, 0, 0, 10), 2, 2)
+
+mu1 <- c(10, 15)
+mu2 <- c(15, 15)
+
+xc1 <- mvrnorm(n=n, mu = mu1, Sigma = sigma1)
+xc2 <- mvrnorm(n=n, mu = mu2, Sigma = sigma2)
+
+plotxmin <- min(xc1[,1], xc2[,1]) - 1
+plotymin <- min(xc1[,2], xc2[,2]) - 1
+plotxmax <- max(xc1[,1], xc2[,1]) + 1
+plotymax <- max(xc1[,2], xc2[,2]) + 1
+
+# система
+plot(c(), type="n", xlab = "x", ylab = "y", xlim=c(plotxmin, plotxmax), ylim = c(plotymin, plotymax))
+
+# объекты
+points(xc1, pch=21, col=colors[1], bg=colors[1])
+points(xc2, pch=21, col=colors[2], bg=colors[2])
+scalex <- 40
+scaley <- 40
+
+mu1 <- estimateMu(xc1)
+mu2 <- estimateMu(xc2)
+sigma1 <- estimateSigma(xc1, mu1)
+sigma2 <- estimateSigma(xc2, mu2)
+
+func <- getFunc(sigma1, mu1, sigma2, mu2)
+
+x <- seq(plotxmin-5, plotxmax+5, len = 150)
+y <- seq(plotymin-5, plotymax+5, len = 150)
+z <- outer(x, y, func)
+contour(x, y, z, levels = 0, add = TRUE, drawlabels = TRUE, lwd = 2.5)
+
+# карта
+x <- seq(0, 40, 40/80)
+y <- seq(0, 40, 40/80)
+
+for (i in x) {
+  for (j in y) {
+    res1 <- classificator(c(i, j), mu1, sigma1, 1, 1)
+    res2 <- classificator(c(i, j), mu2, sigma2, 1, 1)
+    color <- ifelse(res1 > res2, "red", "green")
+    
+    points(i, j, pch = 21, col = color)
+  }
 }
 ```
