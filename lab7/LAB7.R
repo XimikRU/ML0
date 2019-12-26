@@ -44,17 +44,29 @@ getFunc <- function(sigma1, mu1, sigma2, mu2) {
   return(func)
 }
 
-classificator <- function(x, mu, sigma, Prob, Prior) {
+classificator <- function(x, mu1, mu2, sigma, sigma2, Prob, Prior) {
   res <- log(Prob * Prior)
   l <- length(x)
-  chisl <- exp(
+  chisl1 <- exp(
     (-1/2)*(
-      t(x-as.vector(mu)) %*% solve(sigma) %*% (x-as.vector(mu))
+      t(x-as.vector(mu1)) %*% solve(sigma1) %*% (x-as.vector(mu1))
     )
   )
-  res = chisl/((2*pi) * det(sigma)^(1/2))
+  chisl2 <- exp(
+    (-1/2)*(
+      t(x-as.vector(mu2)) %*% solve(sigma2) %*% (x-as.vector(mu2))
+    )
+  )
   
-  return(res)
+  
+  res1 = chisl1/((2*pi) * det(sigma1)^(1/2))
+  res2 = chisl2/((2*pi) * det(sigma2)^(1/2))
+  
+  #
+  color <- ifelse(res1 > res2, "red", "green")
+  #
+  
+  return(color)
 }
 
 n <- 300
@@ -110,9 +122,7 @@ y <- seq(0, 40, 40/80)
 
 for (i in x) {
   for (j in y) {
-    res1 <- classificator(c(i, j), mu1, sigma1, 1, 1)
-    res2 <- classificator(c(i, j), mu2, sigma2, 1, 1)
-    color <- ifelse(res1 > res2, "red", "green")
+    color <- classificator(c(i, j), mu1, mu2, sigma1, sigma2, 1, 1)
     
     points(i, j, pch = 21, col = color)
   }
